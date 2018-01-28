@@ -7,8 +7,8 @@ import MessageStore from '../stores/message_store';
 export default class Chattxt extends Component {
   constructor(props) {
     super(props);
-    this.store = new MessageStore();
     this.state = {messages: []};
+    this.store = new MessageStore(this.appendMessages.bind(this));
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInvite = this.handleInvite.bind(this);
 
@@ -24,13 +24,8 @@ export default class Chattxt extends Component {
     }
   }
 
-  componentWillMount() {
-    this.store.listenForMessages(this.appendMessages);
+  componentDidMount() {
     this.store.pollForMessages(this.userAddress, this.roomAddress);
-  }
-
-  componentWillUnmount(){
-
   }
 
   handleSubmit(event) {
@@ -64,7 +59,7 @@ export default class Chattxt extends Component {
     inviteBox.value = "";
 
     //userAddress, roomAddress, keystore, password, otherUserAddress
-    
+
     const action = new Action(ActionType.USER_INVITED, {
       userAddress: this.userAddress,
       roomAddress: this.roomAddress,
@@ -76,21 +71,19 @@ export default class Chattxt extends Component {
     console.log(action);
     const dispatcher = new Dispatcher();
     dispatcher.dispatch(action);
-    
+
     event.preventDefault();
   }
 
   appendMessages(messages)
   {
-    for (let i = 0; i < messages.length; i++) {
-      this._events.MESSAGE_AVAILABLE.appendMessage(messages[i]);
-    }
-  }
+    let currentState = this.state.messages;
 
-  appendMessage(message) {
-    let messages = this.state.messages;
-    messages.push(message);
-    this.setState({messages});
+    messages.forEach((m) => {
+      currentState.push(m);
+    });
+
+    this.setState({messages: currentState});
   }
 
   render() {

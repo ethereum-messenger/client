@@ -1,12 +1,14 @@
 import Dispatcher from '../dispatcher';
 import { Action, ActionType } from '../actions';
-import { EventEmitter } from 'events';
 import axios from 'axios';
 
 export default class MessageStore {
-  constructor() {
+  constructor(mutationFn) {
     this.dispatcher = new Dispatcher();
-    this.token = this.dispatcher.register(this.handleEvents);
+    this.token = this.dispatcher.register(this.handleEvents.bind(this));
+    this.mutationFn = mutationFn;
+    this.handleEvents.bind(this);
+    this.pollForMessages.bind(this);
   }
 
   async handleEvents(action) {
@@ -32,7 +34,7 @@ export default class MessageStore {
           urlSearchParams.append('roomAddress', action.data.roomAddress);
           urlSearchParams.append('optionalLastMessage', action.data.optionalLastMessage);
           response = await axios.get(`http://localhost:3750/rooms/messages?${urlSearchParams.toString()}`);
-          emitter.emit('MESSAGE_AVAILABLE', response.data.messages);
+          this.mutationFn(response.data.messages);
           break;
       }
     }
@@ -49,9 +51,5 @@ export default class MessageStore {
     });
 
     setInterval(() => this.dispatcher.dispatch(action), 5000);
-  }
-
-  listenForMessages(callback) {
-    emitter.on('MESSAGE_AVAILABLE', callback);
   }
 }
