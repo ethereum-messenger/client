@@ -4,14 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var cors = require('cors');
 
 var index = require('./routes/index');
-var api = require('./routes/api');
 
 var app = express();
-
-app.use(cors());
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -19,33 +15,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-// app.use('/api', api);
-app.use((req, res, next) => {
-  if (req.subdomains[0] === 'api') {
-
-    app.use(api);
-
-    // catch 404 and forward to error handler
-    app.use(function(req, res, next) {
-      var err = new Error('Not Found');
-      err.status = 404;
-      next(err);
-    });
-
-    // error handler
-    app.use(function(err, req, res, next) {
-      // set locals, only providing error in development
-      res.locals.message = err.message;
-      res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-      res.status(err.status || 500).send();
-    });
-
-  } else {
-    app.use(index);
-  }
-  next();
-});
+app.use(index);
 
 module.exports = app;

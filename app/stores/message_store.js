@@ -1,38 +1,51 @@
 import Dispatcher from '../dispatcher';
-import { ActionType } from '../actions';
+import { Action, ActionType } from '../actions';
 import { EventEmitter } from 'events';
 import axios from 'axios';
 
 export default class MessageStore {
   constructor() {
-    this.messages = [];
     this.dispatcher = new Dispatcher();
     this.token = this.dispatcher.register(this.handleEvents);
     this.emitter = new EventEmitter();
   }
 
-  handleEvents(action) {
-    switch(action.type) {
-      case ActionType.ROOM_CREATED:
-        axios.post('http://api.lvh.me:3000/rooms', action.data)
-        .then(response => console.log(response))
-        break;
-      case ActionType.USER_INVITED:
-        axios.post('http://api.lvh.me:3000/invitations', action.data)
-        .then(response => console.log(response))
-        break;
-      case ActionType.MESSAGE_POSTED:
-        alert('here');
-        axios.post('http://api.lvh.me:3000/rooms/messages', action.data)
-        .then(response => {
-          console.log(response)
-        })
-        break;
-      case ActionType.DISPLAY_MESSAGES:
-        axios.get('http://api.lvh.me:3000/rooms/messages', action.data)
-        .then(response => console.log(response))
-        break;
+  async handleEvents(action) {
+    let response;
+
+    try {
+      switch(action.type) {
+        case ActionType.ROOM_CREATED:
+          response = await axios.post('http://localhost:3750/rooms', action.data);
+          console.log(response);
+          break;
+        case ActionType.USER_INVITED:
+          response = await axios.post('http://localhost:3750/invitations', action.data);
+          console.log(response);
+          break;
+        case ActionType.MESSAGE_POSTED:
+          response = await axios.post('http://localhost:3750/rooms/messages', action.data);
+          console.log(response);
+          break;
+        case ActionType.DISPLAY_MESSAGES:
+          response = await axios.get('http://localhost:3750/rooms/messages', action.data);
+          this.emitter.emit('MESSAGE_AVAILABLE', response.messages);
+          break;
+      }
     }
+    catch (err) {
+      console.log(err);
+    }
+  }
+
+  pollForMessages(userAddress, roomAddress) {
+    const action = new Action(ActionType.DISPLAY_MESSAGES, {
+      userAddress,
+      roomAddress,
+      optionalLastMessage: 0,
+    });
+
+    setInterval(() => this.dispatcher.dispatch(action), 5000);
   }
 
   listenForMessages(callback) {

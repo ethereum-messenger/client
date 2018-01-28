@@ -15,7 +15,6 @@
     "babel-preset-react": "^6.24.1",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
-    "cors": "^2.8.4",
     "css-loader": "^0.28.9",
     "debug": "~2.6.9",
     "express": "~4.15.5",

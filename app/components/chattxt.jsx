@@ -23,7 +23,8 @@ export default class Chattxt extends Component {
   }
 
   componentWillMount() {
-    this.store.listenForMessages(this.appendMessages)
+    this.store.listenForMessages(this.appendMessages);
+    this.store.pollForMessages(this.userAddress, this.roomAddress);
   }
 
   componentWillUnmount(){
