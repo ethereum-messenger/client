@@ -77,7 +77,7 @@ export default class Chattxt extends Component {
 
   appendMessages(messages)
   {
-    let currentState = this.state.messages;
+    let currentState = [];
 
     messages.forEach((m) => {
       currentState.push(m);
