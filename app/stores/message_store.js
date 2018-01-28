@@ -12,7 +12,7 @@ export default class MessageStore {
 
   async handleEvents(action) {
     let response;
-
+    console.log(action);
     try {
       switch(action.type) {
         case ActionType.ROOM_CREATED:
@@ -39,6 +39,7 @@ export default class MessageStore {
   }
 
   pollForMessages(userAddress, roomAddress) {
+    /*
     const action = new Action(ActionType.DISPLAY_MESSAGES, {
       userAddress,
       roomAddress,
@@ -46,6 +47,7 @@ export default class MessageStore {
     });
 
     setInterval(() => this.dispatcher.dispatch(action), 5000);
+    */
   }
 
   listenForMessages(callback) {

@@ -10,6 +10,8 @@ export default class Chattxt extends Component {
     this.store = new MessageStore();
     this.state = {messages: []};
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleInvite = this.handleInvite.bind(this);
+
     this.params = new URLSearchParams(props.location.search);
     this.userAddress = this.params.get('userAddress');
     this.roomAddress = this.params.get('roomAddress');
@@ -56,12 +58,14 @@ export default class Chattxt extends Component {
   }
 
   handleInvite(event) {
+    console.log('invite');
     const inviteBox = document.getElementById('otherId');
     const inviteId = inviteBox.value;
     inviteBox.value = "";
 
     //userAddress, roomAddress, keystore, password, otherUserAddress
-    const action = new Action(ActionType.ROOM_CREATED, {
+    
+    const action = new Action(ActionType.USER_INVITED, {
       userAddress: this.userAddress,
       roomAddress: this.roomAddress,
       keystore: this.keystore,
@@ -69,8 +73,10 @@ export default class Chattxt extends Component {
       message: inviteId,
     });
 
+    console.log(action);
     const dispatcher = new Dispatcher();
     dispatcher.dispatch(action);
+    
     event.preventDefault();
   }
 
