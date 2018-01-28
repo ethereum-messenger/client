@@ -82,9 +82,9 @@ export default class Chattxt extends Component {
 
   appendMessages(messages)
   {
-    (messages).forEach(element => {
-      appendMessage(element)
-    });
+    for (let i = 0; i < messages.length; i++) {
+      this._events.MESSAGE_AVAILABLE.appendMessage(messages[i]);
+    }
   }
 
   appendMessage(message) {
